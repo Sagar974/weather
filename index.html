@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Find The Weather</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+          <style>
+            #bg{
+                background-image: url("https://wallpapercrafter.com/desktop/244483-cloud-sky-single-cloud-and-blue-sky-hd.jpg");
+                background-size: cover;
+            }
+            h1{
+                 font-family: "Playwrite AU QLD", cursive;
+                 color: bisque;
+            }
+          </style>
+</head>
+<body>
+    <div id="bg" class="d-flex align-items-center justify-content-center flex-column" style="min-height: 100vh;">
+        <h1 class="text-center">Find The Weather</h1><br>
+        <div class="text-center fw-bold mb-3">
+            <input id="cname" type="text" class="form-control" placeholder="Enter city" style="max-width: 300px; margin: auto;" />
+            <button onclick="search()" class="btn btn-success mt-2">Search</button>
+        </div>
+        <div id="output" class="m-5 rounded p-3 text-center ms-5" style="background-color: rgba(5, 207, 218, 0.555); opacity: 0.8; max-width: 400px;">
+        </div>
+    </div>
+
+<script>
+    async function search() {
+        const cname = document.getElementById('cname');
+        const output = document.getElementById('output');
+        const city = cname.value.trim();
+
+        if (city === "") {
+            output.style.color = "red";
+            output.innerHTML = "Please enter a city name.";
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=5b4bee0ba241d092159faf007e166080&units=metric`
+            );
+
+            if (!response.ok) {
+                output.style.color = "red";
+                output.innerHTML = `City "${city}" not found.`;
+                return;
+            }
+
+            const data = await response.json();
+
+            output.style.color = "black";
+            output.innerHTML = `
+                <h3>${data.name}</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">Temperature: ${data.main.temp} °C</li>
+                    <li class="list-group-item">Humidity: ${data.main.humidity} %</li>
+                    <li class="list-group-item">Wind Speed: ${data.wind.speed} m/s</li>
+                    <li class="list-group-item">Pressure: ${data.main.pressure} hPa</li>
+                    <li class="list-group-item">Weather: ${data.weather[0].description}</li>
+                </ul>
+            `;
+
+        } catch (error) {
+            output.style.color = "red";
+            output.innerHTML = "Error";
+            console.error(error);
+        }
+    }
+</script>
+</body>
+</html>
